@@ -1,0 +1,29 @@
+
+
+start =
+    expression
+
+expression = expression2 /
+    ws* "'" ex2:expression2 {return ['quote'].concat([ex2]);}
+
+expression2 =
+    ws* a:atom  ws* {return a;}/ 
+    lp x:atomGroup y:expression2* rp {return x.concat(y);} /
+    lp x:expression2* rp {return x;}
+
+lp = ws* '(' ws*
+
+rp = ws* ')' ws*
+
+atomGroup = a:atom b:wsAtom*  {return [a].concat(b)}
+
+wsAtom = ws+ a:atom {return a}
+
+ws =  [ \t\r\n]+ /  ";;" [^\r\n]* 
+    
+validchar
+    = [0-9a-zA-Z_?!+=@#$%^&*/.-]
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }

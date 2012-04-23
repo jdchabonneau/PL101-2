@@ -1,0 +1,20 @@
+
+
+start =
+song
+
+song = seg
+
+seg = '(' xxx+ ')' segName?
+
+segName =[a-zA-Z0-9_]+
+
+xxx = note 
+
+note = pitch duration
+
+pitch = [RA-G] / 'C+'  / 'D+'  / 'F+'  / 'G+'  / 'A+' 
+
+duration = [seqhw] [.]?
+
+ws = [ \t\r\n]
