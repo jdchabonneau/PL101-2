@@ -1,20 +1,45 @@
 
 
-start =
-song
+start = l:cmdlist ws* {return l;}
+//song
 
 song = seg
 
-seg = '(' xxx+ ')' segName?
+seg = ws* '(' ws* sg:segGuts ws* ')' segName? ws*
+{return sg;}
 
-segName =[a-zA-Z0-9_]+
+segGuts = l:xxx r:ws_xxx* {return [l].concat(r)}
 
-xxx = note 
+segName = ':' [a-zA-Z0-9_]+
 
-note = pitch duration
+xxx = n:note {return n;} 
+    / seg
 
-pitch = [RA-G] / 'C+'  / 'D+'  / 'F+'  / 'G+'  / 'A+' 
+ws_xxx = ws+ r:xxx {return r;}
 
-duration = [seqhw] [.]?
+note = p:pitch d:duration {return p +d}
+
+pitch = octave? [ra-gCDFGA]  
+
+octave = "++" / "+" / "--" / "-"
+
+duration = d:[124863] dot:[.]? {return d + dot}
 
 ws = [ \t\r\n]
+
+cmdlist = l:(cmd / ws_cmd) r:ws_cmd* {return [l].concat(r);}
+
+ws_cmd = ws+ cmd:cmd {return cmd;}
+
+cmd= c1 / c2 /c3/c0/c4/c5
+
+c0 = l:"title:" ws* r:string_args {return [l].concat(r);}
+c1 = l:"key:" ws* r:key_args {return [l].concat(r);}
+c2 = l:"time:" ws* r:time_args {return [l].concat(r);}
+c3 = l:"tempo:"
+c4 = l:"octave:"
+c5 = l:"instrument:" ws* r:string_args {return [l].concat(r);}
+
+key_args = 'c' / 'C' / 'f#' / 'F#'
+time_args = '4/4' / '4/2'
+string_args = '"' s:[a-zA-Z0-9_ ]* '"' {return s.join("");}
